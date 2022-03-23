@@ -801,3 +801,7 @@ def student_stats(request):
     total_incor = fifth_tri_incorrect
     
   return render(request, "user_app/student_stats.html", { 'users': all, 'range': range(0, len(all)), 'struggle': struggle, 'total_incorrect': total_incor, 'first_bon': first_bon_incorrect, 'second_bon': second_bon_incorrect, 'third_bon': third_bon_incorrect, 'fourth_bon': fourth_bon_incorrect, 'fifth_bon': fifth_bon_incorrect, 'first_tris': first_tri_incorrect, 'second_tris': second_tri_incorrect, 'third_tris': third_tri_incorrect, 'fourth_tris': fourth_tri_incorrect, 'fifth_tris': fifth_tri_incorrect })
+
+@login_required
+def awards(request):
+  return render(request, "user_app/awards.html")

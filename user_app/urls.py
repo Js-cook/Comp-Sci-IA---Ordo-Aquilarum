@@ -12,6 +12,7 @@ urlpatterns = [
     path("second", views.second, name="second"),
     path("third", views.third, name="third"),
     path("fourth", views.fourth, name="fourth"),
-    path("fifth", views.fifth, name="fifth")
+    path("fifth", views.fifth, name="fifth"),
+    path("awards", views.awards, name="awards")
 ]
 

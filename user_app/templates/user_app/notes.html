@@ -18,8 +18,13 @@
           <a class="nav-link" href="{% url 'notes' %}">Notes</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="{% url 'awards' %}">Awards</a>
+        </li>
+        {% if perms.user_app.check_students %}
+        <li class="nav-item">
           <a class="nav-link" href="{% url 'student_stats' %}">Student Stats</a>
         </li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav ms-auto">
         <form class="container-fluid justify-content-start">
