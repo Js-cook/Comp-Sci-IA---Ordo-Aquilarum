@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #b58dc7;">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'index' %}">Ordo Aquilarum</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'notes' %}">Notes</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <form class="container-fluid justify-content-start">
+    <a class="btn btn-primary" roll="button" href="{% url 'register' %}">Register</a>
+        </form>
+      </ul>  
+    </div>
+  </div>
+</nav>
+
+{% if form.errors %}
+<div class="alert alert-danger d-flex justify-content-center" role="alert">
+<h2>Something went wrong. Check that you correctly entered your username and password</h2>
+</div>
+{% endif %}
+
+{% if next %}
+<div class="alert alert-danger d-flex justify-content-center" role="alert">
+<h2>Please login to proceed</h2>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-center border">
+  <form method="post" action="{% url 'login' %}" class="logform">
+    {% csrf_token %}
+  
+    <h2>Username</h2>
+    <h3>{{form.username}}</h3>
+    <h2>Password</h2>
+    <h3>{{form.password}}</h3>
+
+    <div class="d-grid">
+      <br>
+      <input type="submit" value="Login" class="btn btn-primary logn">
+      <input type="hidden" name="next" value="{{ next }}"
+    </div>
+  </form>
+</div>
+  
+{% endblock %}

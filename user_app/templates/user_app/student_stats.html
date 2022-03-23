@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Statistics{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #b58dc7;">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'index' %}">Ordo Aquilarum</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'notes' %}">Notes</a>
+        </li>
+        {% if perms.user_app.check_students %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'student_stats' %}">Student Stats</a>
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <form class="container-fluid justify-content-start">
+    {% if not user.is_authenticated %}
+    <a class="btn btn-primary" roll="button" href="{% url 'login' %}">Login</a>
+    {% else %}
+    <a class="btn btn-primary" roll="button" href="{% url 'log_out' %}">Logout</a>
+    {% endif %}
+        </form>
+      </ul>  
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <h1>Student Statistics</h1>
+  <h5>This page shows a list of all student scores and percentages. More functionality coming soon.</h5>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Correct</th>
+      <th>Incorrect</th>
+      <th>Percentage</th>
+    </tr>
+  </thead>
+  {% for user in users %}
+  <tr>
+    {% if user.average >= 60 %}
+    <th>{{user.user}}</th>
+    <th class="correct">{{user.correct}}</th>
+    <th class="incorrect">{{user.incorrect}}</th>
+    <th class="percentage">{{user.average}}%</th>
+    {% else %}
+    <th class="text-danger">{{user.user}}</th>
+    <th class="correct text-danger">{{user.correct}}</th>
+    <th class="incorrect text-danger">{{user.incorrect}}</th>
+    <th class="percentage text-danger">{{user.average}}%</th>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+<br>
+<hr>
+<div class="container">
+  <h1>Problem Area</h1>
+  <h5>Based on user statistics, we have identified {{struggle}} as a major area of difficulty.</h5>
+  <h5>In total, {{total_incorrect}} questions from {{struggle}} have been answered incorrectly</h5>
+</div>
+
+<span class="d-none val">{{first_bon}}</span>
+<span class="d-none val">{{second_bon}}</span>
+<span class="d-none val">{{third_bon}}</span>
+<span class="d-none val">{{fourth_bon}}</span>
+<span class="d-none val">{{fifth_bon}}</span>
+<span class="d-none val">{{first_tris}}</span>
+<span class="d-none val">{{second_tris}}</span>
+<span class="d-none val">{{third_tris}}</span>
+<span class="d-none val">{{fourth_tris}}</span>
+<span class="d-none val">{{fifth_tris}}</span>
+
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+<script>
+  yValues = []
+  var values = document.getElementsByClassName("val")
+  for (var value of values) {
+    var yValues.push(value.text)
+  }
+  var xValues = ["First decl. w/ first adj.", "Second decl. w/ first adj.", "Third decl. w/ first adj.", "Fourth decl. w/ first adj", "Fifth decl. w/ first adj", "First decl. w/ third adj.", "Second decl. w/ third adj.", "Third decl. w/ third adj.", "Fourth decl. w/ third adj.", "Fifth decl. w/ third adj."]
+  var barColors = ["red", "orange", "yellow", "green", "blue", "purple", "indigo", "violet", "brown", "grey",]
+  new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    title: {
+      display: true,
+      text: "Total Questions Incorrect By Category"
+    }
+  }
+});
+</script>
+
+{% endblock %}

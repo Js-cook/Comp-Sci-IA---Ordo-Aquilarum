@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Question{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-light navbar-expand-lg" style="background-color: #b58dc7;">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'index' %}">Ordo Aquilarum</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'notes' %}">Notes</a>
+        </li>
+        {% if perms.user_app.check_students %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'student_stats' %}">Student Stats</a>
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <form class="container-fluid justify-content-start">
+    {% if not user.is_authenticated %}
+    <a class="btn btn-primary" roll="button" href="{% url 'login' %}">Login</a>
+    {% else %}
+    <a class="btn btn-primary" roll="button" href="{% url 'log_out' %}">Logout</a>
+    {% endif %}
+        </form>
+      </ul>  
+    </div>
+  </div>
+</nav>
+
+<div class="alert alert-secondary" role="alert">
+  <div class="row">
+    <div class="col">
+      <p>Correct: {{stats.correct}}</p>    
+    </div>
+    <div class="col">
+      <p>Incorrect: {{stats.incorrect}}</p>
+    </div>
+  </div>
+</div>
+{% if outcome == '' %}
+
+{% elif outcome == 'correct' %}
+<div class="alert alert-success" role="alert">
+  Correct!
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert">
+  Incorrect!
+</div>
+<!--  The correct answer was {{previous.case}} {{previous.number}} -->
+{% endif %}
+
+<div class="container text-center">
+  <h1>{{ term.noun }}</h1>
+</div>
+
+<div class="d-flex justify-content-center">
+  <form class="form-horizontal text-align-center" method="post">
+    {% csrf_token %}
+      <div class="form-check form-check-inline">
+        <input type="radio" id="nom" name="case" class="form-check-input" value=" Nominative">
+        <label for="nom" class="form-check-label">Nominative</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="gen" name="case" class="form-check-input" value=" Genitive">
+        <label for="gen" class="form-check-label">Genitive</label>
+      </div>
+      <br>
+      <br>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="dat" name="case" class="form-check-input" value=" Dative">
+        <label for="dat" class="form-check-label">Dative</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="acc" name="case" class="form-check-input" value=" Accusative">
+        <label for="acc" class="form-check-label">Accusative</label>
+      </div>
+      <br>
+      <br>
+      <div class="form-check form-check-inline d-flex justify-content-center">
+        <input type="radio" id="abl" name="case" class="form-check-input" value=" Ablative">
+        <label for="abl" class="form-check-label">Ablative</label>
+      </div>
+    <br>
+    <br>
+    <div class="form-check form-check-inline">
+      <input type="radio" id="sg" name="number" value=" sg." class="form-check-input">
+      <label for="sg" class="form-check-label">Singular</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input type="radio" id="pl" name="number" value=" pl." class="form-check-input">
+      <label for="pl" class="form-check-label">Plural</label>
+    </div>
+    <br>
+    <br>
+    <div class="d-flex justify-content-center">
+      <input type="submit" onclick="checkAnswer()" class="btn btn-primary">
+    </div>
+    <input id="final" name="result" value="" class="d-none">
+  </form>
+      <!-- <br> -->
+</div>
+
+<span id="correctCase" class="d-none">{{term.case}}</span>
+<span id="correctGender" class="d-none">{{term.gender}}</span>
+<span id="correctNumber" class="d-none">{{term.number}}</span>
+
+{% for alternate in possible %}
+<!-- <span id="alternateCase" class="d-none">{{alternate.case}}</span>
+<span id="alternateGender" class="d-none">{{alternate.gender}}</span>
+<span id="alternateNumber" class="d-none">{{alternate.number}}</span> -->
+<span class="d-none alternateCase">{{alternate.case}}</span>
+<span id="alternateGender" class="d-none alternateGender">{{alternate.gender}}</span>
+<span class="d-none alternateNumber">{{alternate.number}}</span>
+{% endfor %}
+   
+</div>
+<script defer>
+  if ( window.history.replaceState ) {
+window.history.replaceState( null, null, window.location.href );
+    }
+  function checkAnswer(){
+    var caseAnswer = document.querySelector("[name='case']:checked").value
+    var numberAnswer = document.querySelector("[name='number']:checked").value
+    var possibleCaseAnswer = document.getElementsByClassName("alternateCase")
+    var possibleNumberAnswer = document.getElementsByClassName("alternateNumber")
+    var answeredCorrectly = false
+    for (var i=0; i<possibleCaseAnswer.length; i++){
+      if ((caseAnswer === correctCase.textContent || caseAnswer === possibleCaseAnswer[i].textContent) && (numberAnswer === correctNumber.textContent || numberAnswer === possibleNumberAnswer[i].textContent)){
+      console.log(possibleCaseAnswer[i])
+      console.log(possibleNumberAnswer[i])
+      answeredCorrectly = true
+      document.getElementById("final").value = "correct"
+      break;
+    }
+     }
+    if (answeredCorrectly === false){
+        console.log(possibleCaseAnswer[i])
+        console.log(possibleNumberAnswer[i])
+        document.getElementById("final").value = "incorrect"
+    }
+    }
+</script>
+
+{% endblock %}
