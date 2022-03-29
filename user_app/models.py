@@ -38,6 +38,9 @@ class CustomUser(models.Model):
     else:
       avg = 0
     return round(avg, 1)
+
+  # def total(self):
+  #   return self.correct + self.incorrect
   class Meta:
     permissions = [("check_students", "Can view student stats")]
 

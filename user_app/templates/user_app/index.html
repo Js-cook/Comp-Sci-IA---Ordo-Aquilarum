@@ -41,10 +41,10 @@
   {% if user.is_authenticated %}
   {% if perms.user_app.check_students %}
   <h1>Hello {{user.username}}.
-  <h4><span class="badge bg-primary">Magister</span><h4></h1>
+  <h4><span class="badge bg-primary">Magister | {{title}}</span><h4></h1>
   {% else %}
   <h1>Hello {{user.username}}.
-  <h4><span class="badge bg-secondary">Discipulus</span></h4>
+  <h4><span class="badge bg-secondary">Discipulus | {{title}}</span></h4>
   </h1>
   {% endif %}
   {% else %}

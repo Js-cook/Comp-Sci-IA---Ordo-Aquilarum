@@ -10,9 +10,23 @@ def index(request):
   if request.user.is_authenticated:
     logged_in = request.user
     actual = CustomUser.objects.get(user = logged_in)
+    total = actual.correct + actual.incorrect
+    if total < 100:
+      title = "Novice"
+    elif total in range(100,999):
+      title = "Intermediate"
+    elif total in range (1000,4999):
+      title = "Advanced"
+    elif total >= 5000:
+      title = "Master"
+    if request.user.is_superuser:
+      title = "DEV"
+    
   else:
     actual = None
-  return render(request, "user_app/index.html", { 'userr': actual })
+    title = None
+  
+  return render(request, "user_app/index.html", { 'userr': actual, 'title': title })
 
 @login_required
 def question(request):
