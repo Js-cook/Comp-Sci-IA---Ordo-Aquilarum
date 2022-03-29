@@ -40,4 +40,27 @@
   <h1>Awards.</h1>
   <h5>When you achieve milestones in your practice, your awards will show up here.</h5>
 </div>
+<hr>
+<div class="container">
+  <h2>Totals and Titles</h2>
+  <h5>Here you will find your awards based on how many questions you have answered and the titles you have earned.</h5>
+</div>
+<div class="d-flex justify-content-center">
+  <div class="card" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">Title: {{title}}</h5>
+      {% if title == "Novice" %}
+      <p class="card-text">Everyone needs to start somewhere and you have already started your journey. You have answered a total of {{total}} questions.</p>
+      {% elif title == "Intermediate" %}
+      <p class="card-text">Wow you have made some serious progress! If each question you answered was a mile long, it would be almost twice the length of the Tiber river. You have answered a total of {{total}} questions.</p>
+      {% elif title == "Advanced" %}
+      <p class="card-text">Wowee that's a lot of questions you have answered. If each question you answered was a mile long, it would be longer than the Rhine river! You have answered a total of {{total}} questions.</p>
+      {% elif title == "Master" %}
+      <p class="card-text">I am in awe. You have reached the highest rank and have earned eternal glory. You have answered a total of {{total}} questions.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<hr>
+
 {% endblock %}

@@ -818,4 +818,15 @@ def student_stats(request):
 
 @login_required
 def awards(request):
-  return render(request, "user_app/awards.html")
+  user = request.user
+  actual = CustomUser.objects.get(user=user)
+  total = actual.correct + actual.incorrect
+  if total < 100:
+    title = "Novice"
+  elif total in range(100,999):
+    title = "Intermediate"
+  elif total in range (1000,4999):
+    title = "Advanced"
+  elif total >= 5000:
+    title = "Master"
+  return render(request, "user_app/awards.html", { 'title': title, 'total': total})
