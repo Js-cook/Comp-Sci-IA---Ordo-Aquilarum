@@ -34,20 +34,24 @@ def question(request):
   type = 1 
   outcome = ""
   if type == 1:
-    objects = []
-    possible = []
-    for object in Question.objects.all():
-      objects.append(object)
-    selection = random.choice(objects)
+    # objects = []
+    # possible = []
+    # for object in Question.objects.all():
+    #   objects.append(object)
+    # selection = random.choice(objects)
     name = request.user
     usern = CustomUser.objects.get(user=name)
-    (usern.previous_question)
     # usern.previous_question = selection
     # usern.save()
     if request.method == "POST":
-      # (request.user)
-      
+      objects = []
+      possible = []
+      for object in Question.objects.all():
+        objects.append(object)
+      selection = random.choice(objects)
       if request.POST["result"] == "correct":
+        usern.previous_question = selection
+        # usern.save()
         outcome = "correct"
         current_correct = usern.correct
         usern.correct = current_correct + 1
@@ -57,7 +61,7 @@ def question(request):
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
-        usern.previous_question = selection
+        # usern.previous_question = selection
         usern.save()
         # usern.save()
         if previous_q.id in range(1,590):
@@ -113,9 +117,14 @@ def question(request):
           
       (request.POST["result"])
     else:
-      (f"id: {selection.id}")
-      usern.previous_question = selection
-      usern.save()
+      # (f"id: {selection.id}")
+      objects = []
+      possible = []
+      for object in Question.objects.all():
+        objects.append(object)
+      selection = random.choice(objects)
+      # usern.previous_question = selection
+      # usern.save()
       
     (selection.noun)
     for object in objects:
@@ -222,8 +231,10 @@ def question(request):
 
 @login_required
 def first(request):
-  # type = random.randint(1,2)
-  type = 1
+  type = random.randint(1,2)
+  user = request.user
+  usern = CustomUser.objects.get(user=user)
+  # type = 1
   outcome = ""
   objects = []
   possible = []
@@ -261,7 +272,7 @@ def first(request):
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
-    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, })
+    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
     objects.remove(selection)
     term = selection.noun.split()
@@ -307,11 +318,13 @@ def first(request):
       incorrect2_l = incorrect2.noun.split()
     # previous.append(term[-1])
     location = random.randint(1,3)
-    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location })
+    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def second(request):
   type = random.randint(1,2)
+  user = request.user
+  usern = CustomUser.objects.get(user=user)
   outcome = ""
   # global previous
   if type == 1:
@@ -355,7 +368,7 @@ def second(request):
         possible.append(object)
     # term = Question.objects.get(id=1)
     # (len(Question.objects.all()))
-    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, })
+    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
     objects = []
     adjs = list(range(591, 1440))
@@ -410,12 +423,14 @@ def second(request):
       incorrect2_l = incorrect2.noun.split()
     # previous.append(term[-1])
     location = random.randint(1,3)
-    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location })
+    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def third(request):
   type = random.randint(1,2)
   outcome = ""
+  user = request.user
+  usern = CustomUser.objects.get(user=user)
   # global previous
   if type == 1:
     objects = []
@@ -454,7 +469,7 @@ def third(request):
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
-    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, })
+    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
     objects = []
     # for i in range(1441, 2980):
@@ -510,11 +525,13 @@ def third(request):
       incorrect2_l = incorrect2.noun.split()
     # previous.append(term[-1])
     location = random.randint(1,3)
-    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location })
+    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def fourth(request):
   type = random.randint(1,2)
+  user = request.user
+  usern = CustomUser.objects.get(user=user)
   outcome = ""
   if type == 1:
     objects = []
@@ -558,7 +575,7 @@ def fourth(request):
         possible.append(object)
     # term = Question.objects.get(id=1)
     # (len(Question.objects.all()))
-    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, })
+    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
     objects = []
     # for i in range(2981, 3170):
@@ -614,12 +631,14 @@ def fourth(request):
       incorrect2_l = incorrect2.noun.split()
     # previous.append(term[-1])
     location = random.randint(1,3)
-    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location })
+    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def fifth(request):
   type = random.randint(1,2)
   outcome = ""
+  user = request.user
+  usern = CustomUser.objects.get(user)
   # global previous
   if type == 1:
     objects = []
@@ -662,7 +681,7 @@ def fifth(request):
         possible.append(object)
     # term = Question.objects.get(id=1)
     # (len(Question.objects.all()))
-    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, })
+    return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
     objects = []
     adjs = list(range(3171, 3240))
@@ -718,7 +737,7 @@ def fifth(request):
       incorrect2_l = incorrect2.noun.split()
     # previous.append(term[-1])
     location = random.randint(1,3)
-    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location })
+    return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 def register(request):
   if request.method == "POST":
