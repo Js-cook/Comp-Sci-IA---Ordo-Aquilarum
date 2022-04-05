@@ -48,8 +48,9 @@ def question(request):
       possible = []
       for object in Question.objects.all():
         objects.append(object)
-      selection = random.choice(objects)
+      # selection = random.choice(objects)
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         usern.previous_question = selection
         # usern.save()
         outcome = "correct"
@@ -57,6 +58,7 @@ def question(request):
         usern.correct = current_correct + 1
         usern.save()
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
@@ -117,7 +119,6 @@ def question(request):
           
       (request.POST["result"])
     else:
-      # (f"id: {selection.id}")
       objects = []
       possible = []
       for object in Question.objects.all():
@@ -125,8 +126,6 @@ def question(request):
       selection = random.choice(objects)
       # usern.previous_question = selection
       # usern.save()
-      
-    (selection.noun)
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
