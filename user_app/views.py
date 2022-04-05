@@ -30,8 +30,8 @@ def index(request):
 
 @login_required
 def question(request):
-  # type = random.randint(1,2)
-  type = 1 
+  type = random.randint(1,2)
+  # type = 1 
   outcome = ""
   if type == 1:
     # objects = []
@@ -221,9 +221,13 @@ def question(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
+          break
     # previous.append(term[-1])
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern})
