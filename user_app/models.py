@@ -29,6 +29,9 @@ class CustomUser(models.Model):
   fifth_tris_incor = models.IntegerField(default=0)
 
   previous_question = models.ForeignKey(Question, on_delete=models.CASCADE, default=1)
+
+  streak = models.IntegerField(default=0)
+  highest_streak = models.IntegerField(default=0)
   
   def average(self):
     correct = self.correct
@@ -39,8 +42,6 @@ class CustomUser(models.Model):
       avg = 0
     return round(avg, 1)
 
-  # def total(self):
-  #   return self.correct + self.incorrect
   class Meta:
     permissions = [("check_students", "Can view student stats")]
 
