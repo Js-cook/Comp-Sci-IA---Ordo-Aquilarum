@@ -256,6 +256,7 @@ def first(request):
       if request.POST["result"] == "correct":
         selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
@@ -275,8 +276,6 @@ def first(request):
           current_tris_incorrect = usern.first_tris_incor
           usern.first_tris_incor = current_tris_incorrect + 1
           usern.save()
-      # (request.POST["result"])
-    # (selection.noun)
     else:
       selection = usern.previous_question
     for object in objects:
@@ -284,8 +283,6 @@ def first(request):
         possible.append(object)
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    # objects.remove(selection)
-    # term = selection.noun.split()
     if request.method == "POST":
       if request.POST["result"] == "correct":
         selection = random.choice(objects)
@@ -348,33 +345,41 @@ def second(request):
   type = random.randint(1,2)
   user = request.user
   usern = CustomUser.objects.get(user=user)
+  # type = 1
   outcome = ""
-  # global previous
+  objects = []
+  possible = []
+  adjs = list(range(591,1440))
+  adjs.extend(range(3831,4680))
+  for i in adjs:
+    objects.append(Question.objects.get(id=i))
+  # selection = random.choice(objects)
+  name = request.user
+  usern = CustomUser.objects.get(user=name)
   if type == 1:
-    objects = []
-    possible = []
-    adjs = list(range(591, 1440))
-    adjs.extend(range(3831, 4680))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
+      objects = []
+      possible = []
+      adjs = list(range(591,1440))
+      adjs.extend(range(3831,4680))
+      for i in adjs:
+        objects.append(Question.objects.get(id=i))
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
-        # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(591, 1440):
+        if previous_q.id in range(591,1440):
           current_bon_incorrect = usern.second_bon_incor
           usern.second_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -382,52 +387,48 @@ def second(request):
           current_tris_incorrect = usern.second_tris_incor
           usern.second_tris_incor = current_tris_incorrect + 1
           usern.save()
-        
-      # (request.POST["result"])
-    # previous.append(selection)
-    # (selection.noun)
+    else:
+      selection = usern.previous_question
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
-    # term = Question.objects.get(id=1)
-    # (len(Question.objects.all()))
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    objects = []
-    adjs = list(range(591, 1440))
-    adjs.extend(range(3831, 4680))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    objects.remove(selection)
-    term = selection.noun.split()
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
+        usern.previous_question = selection
         outcome = "correct"
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
         # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
+        usern.streak = 0
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(591, 1440):
+        if previous_q.id in range(591,1440):
           current_bon_incorrect = usern.second_bon_incor
-          usern.second_bon_incor = current_bon_incorrect+1
+          usern.first_bon_incor = current_bon_incorrect+1
           usern.save()
         else:
           current_tris_incorrect = usern.second_tris_incor
           usern.second_tris_incor = current_tris_incorrect + 1
           usern.save()
+    else:
+      selection = random.choice(objects)
+    objects.remove(selection)
+    term = selection.noun.split()
     
     incorrect1 = random.choice(objects)
-    # (incorrect1.id)
     objects.remove(incorrect1)
     incorrect1_l = incorrect1.noun.split()
     while incorrect1.case == selection.case and incorrect1.gender == selection.gender:
@@ -441,45 +442,56 @@ def second(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
-    # previous.append(term[-1])
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] != incorrect1_l[-1] and incorrect2_l[-1] != term[-1] and incorrect1_l[-1] != term[-1]:
+          break
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def third(request):
   type = random.randint(1,2)
-  outcome = ""
   user = request.user
   usern = CustomUser.objects.get(user=user)
-  # global previous
+  # type = 1
+  outcome = ""
+  objects = []
+  possible = []
+  adjs = list(range(1441,2980))
+  adjs.extend(range(4681,6220))
+  for i in adjs:
+    objects.append(Question.objects.get(id=i))
+  # selection = random.choice(objects)
+  name = request.user
+  usern = CustomUser.objects.get(user=name)
   if type == 1:
-    objects = []
-    possible = []
-    adjs = list(range(1441,2980))
-    adjs.extend(range(4681, 6220))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
+      objects = []
+      possible = []
+      adjs = list(range(1441,2980))
+      adjs.extend(range(4681,6220))
+      for i in adjs:
+        objects.append(Question.objects.get(id=i))
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
-        current_incorrect = usern.incorrect
-        usern.incorrect = current_incorrect + 1
+        usern.previous_question = selection
+        current_correct = usern.correct
+        usern.correct = current_correct + 1
         usern.save()
-        # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(1441, 2980):
+        if previous_q.id in range(591,1440):
           current_bon_incorrect = usern.third_bon_incor
           usern.third_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -487,39 +499,35 @@ def third(request):
           current_tris_incorrect = usern.third_tris_incor
           usern.third_tris_incor = current_tris_incorrect + 1
           usern.save()
-      # (request.POST["result"])
-    # (selection.noun)
+    else:
+      selection = usern.previous_question
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    objects = []
-    # for i in range(1441, 2980):
-    adjs = list(range(1441,2980))
-    adjs.extend(range(4681, 6220))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    objects.remove(selection)
-    term = selection.noun.split()
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
         # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
+        usern.streak = 0
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(1441, 2980):
+        if previous_q.id in range(1441,2980):
           current_bon_incorrect = usern.third_bon_incor
           usern.third_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -527,9 +535,12 @@ def third(request):
           current_tris_incorrect = usern.third_tris_incor
           usern.third_tris_incor = current_tris_incorrect + 1
           usern.save()
+    else:
+      selection = random.choice(objects)
+    objects.remove(selection)
+    term = selection.noun.split()
     
     incorrect1 = random.choice(objects)
-    (incorrect1.id)
     objects.remove(incorrect1)
     incorrect1_l = incorrect1.noun.split()
     while incorrect1.case == selection.case and incorrect1.gender == selection.gender:
@@ -543,10 +554,13 @@ def third(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
-    # previous.append(term[-1])
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] != incorrect1_l[-1] and incorrect2_l[-1] != term[-1] and incorrect1_l[-1] != term[-1]:
+          break
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
@@ -555,34 +569,41 @@ def fourth(request):
   type = random.randint(1,2)
   user = request.user
   usern = CustomUser.objects.get(user=user)
+  # type = 1
   outcome = ""
+  objects = []
+  possible = []
+  adjs = list(range(2981,3170))
+  adjs.extend(range(6221,6410))
+  for i in adjs:
+    objects.append(Question.objects.get(id=i))
+  # selection = random.choice(objects)
+  name = request.user
+  usern = CustomUser.objects.get(user=name)
   if type == 1:
-    objects = []
-    possible = []
-    # for object in Question.objects.all():
-    #   objects.append(object)
-    adjs = list(range(2981, 3170))
-    adjs.extend(range(6221, 6410))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
+      objects = []
+      possible = []
+      adjs = list(range(2981,3170))
+      adjs.extend(range(6221,6410))
+      for i in adjs:
+        objects.append(Question.objects.get(id=i))
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
-        # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(2981, 3170):
+        if previous_q.id in range(2981,3170):
           current_bon_incorrect = usern.fourth_bon_incor
           usern.fourth_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -590,52 +611,48 @@ def fourth(request):
           current_tris_incorrect = usern.fourth_tris_incor
           usern.fourth_tris_incor = current_tris_incorrect + 1
           usern.save()
-      (request.POST["result"])
-    # previous.append(selection)
-    (selection.noun)
+    else:
+      selection = usern.previous_question
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
-    # term = Question.objects.get(id=1)
-    # (len(Question.objects.all()))
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    objects = []
-    # for i in range(2981, 3170):
-    adjs = list(range(2981, 3170))
-    adjs.extend(range(6221, 6410))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
         # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
+        usern.streak = 0
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(2981, 3170):
-          current_bon_incorrect = usern.third_bon_incor
-          usern.third_bon_incor = current_bon_incorrect+1
+        if previous_q.id in range(2981,3170):
+          current_bon_incorrect = usern.fourth_bon_incor
+          usern.fourth_bon_incor = current_bon_incorrect+1
           usern.save()
         else:
-          current_tris_incorrect = usern.third_tris_incor
-          usern.third_tris_incor = current_tris_incorrect + 1
+          current_tris_incorrect = usern.fourth_tris_incor
+          usern.fourth_tris_incor = current_tris_incorrect + 1
           usern.save()
+    else:
+      selection = random.choice(objects)
     objects.remove(selection)
     term = selection.noun.split()
     
     incorrect1 = random.choice(objects)
-    (incorrect1.id)
     objects.remove(incorrect1)
     incorrect1_l = incorrect1.noun.split()
     while incorrect1.case == selection.case and incorrect1.gender == selection.gender:
@@ -649,45 +666,56 @@ def fourth(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
-    # previous.append(term[-1])
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] != incorrect1_l[-1] and incorrect2_l[-1] != term[-1] and incorrect1_l[-1] != term[-1]:
+          break
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
 @login_required
 def fifth(request):
   type = random.randint(1,2)
-  outcome = ""
   user = request.user
-  usern = CustomUser.objects.get(user)
-  # global previous
+  usern = CustomUser.objects.get(user=user)
+  # type = 1
+  outcome = ""
+  objects = []
+  possible = []
+  adjs = list(range(3171,3240))
+  adjs.extend(range(6411,6480))
+  for i in adjs:
+    objects.append(Question.objects.get(id=i))
+  # selection = random.choice(objects)
+  name = request.user
+  usern = CustomUser.objects.get(user=name)
   if type == 1:
-    objects = []
-    possible = []
-    adjs = list(range(3171, 3240))
-    adjs.extend(range(6411, 6480))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
+      objects = []
+      possible = []
+      adjs = list(range(3171,3240))
+      adjs.extend(range(6411,6480))
+      for i in adjs:
+        objects.append(Question.objects.get(id=i))
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
-        # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(3171, 3240):
+        if previous_q.id in range(3171,3240):
           current_bon_incorrect = usern.fifth_bon_incor
           usern.fifth_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -695,40 +723,35 @@ def fifth(request):
           current_tris_incorrect = usern.fifth_tris_incor
           usern.fifth_tris_incor = current_tris_incorrect + 1
           usern.save()
-      (request.POST["result"])
-    
-    # previous.append(selection)
-    (selection.noun)
+    else:
+      selection = usern.previous_question
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
-    # term = Question.objects.get(id=1)
-    # (len(Question.objects.all()))
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    objects = []
-    adjs = list(range(3171, 3240))
-    adjs.extend(range(6411, 6480))
-    for i in adjs:
-      objects.append(Question.objects.get(id=i))
-    selection = random.choice(objects)
-    name = request.user
-    usern = CustomUser.objects.get(user=name)
     if request.method == "POST":
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.previous_question = selection
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
         # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
+        usern.streak = 0
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
         usern.previous_question = selection
         usern.save()
-        if previous_q.id in range(3171, 3240):
+        if previous_q.id in range(3171,3240):
           current_bon_incorrect = usern.fifth_bon_incor
           usern.fifth_bon_incor = current_bon_incorrect+1
           usern.save()
@@ -736,12 +759,12 @@ def fifth(request):
           current_tris_incorrect = usern.fifth_tris_incor
           usern.fifth_tris_incor = current_tris_incorrect + 1
           usern.save()
-    
+    else:
+      selection = random.choice(objects)
     objects.remove(selection)
     term = selection.noun.split()
     
     incorrect1 = random.choice(objects)
-    (incorrect1.id)
     objects.remove(incorrect1)
     incorrect1_l = incorrect1.noun.split()
     while incorrect1.case == selection.case and incorrect1.gender == selection.gender:
@@ -755,10 +778,13 @@ def fifth(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
-    # previous.append(term[-1])
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] != incorrect1_l[-1] and incorrect2_l[-1] != term[-1] and incorrect1_l[-1] != term[-1]:
+          break
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
