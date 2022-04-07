@@ -144,11 +144,15 @@ def question(request):
       if request.POST["result"] == "correct":
         selection = random.choice(objects)
         outcome = "correct"
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
       else:
         selection = usern.previous_question
+        usern.streak = 0
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
@@ -198,7 +202,6 @@ def question(request):
           usern.save()
     else:
       selection = usern.previous_question
-      pass
     objects.remove(selection)
     term = selection.noun.split()
     
@@ -239,17 +242,25 @@ def first(request):
   adjs.extend(range(3241,3830))
   for i in adjs:
     objects.append(Question.objects.get(id=i))
-  selection = random.choice(objects)
+  # selection = random.choice(objects)
   name = request.user
   usern = CustomUser.objects.get(user=name)
   if type == 1:
     if request.method == "POST":
+      objects = []
+      possible = []
+      adjs = list(range(1,590))
+      adjs.extend(range(3241,3830))
+      for i in adjs:
+        objects.append(Question.objects.get(id=i))
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
@@ -266,22 +277,30 @@ def first(request):
           usern.save()
       # (request.POST["result"])
     # (selection.noun)
+    else:
+      selection = usern.previous_question
     for object in objects:
       if object.noun == selection.noun:
         possible.append(object)
     return render(request, "user_app/question.html", { 'term': selection, 'possible': possible, 'outcome': outcome, 'stats': usern})
   else:
-    objects.remove(selection)
-    term = selection.noun.split()
+    # objects.remove(selection)
+    # term = selection.noun.split()
     if request.method == "POST":
       if request.POST["result"] == "correct":
+        selection = random.choice(objects)
         outcome = "correct"
+        usern.streak += 1
+        if usern.streak > usern.highest_streak:
+          usern.highest_streak = usern.streak
         current_correct = usern.correct
         usern.correct = current_correct + 1
         usern.save()
         # previous = []
       else:
+        selection = usern.previous_question
         outcome = "incorrect"
+        usern.streak = 0
         previous_q = usern.previous_question
         current_incorrect = usern.incorrect
         usern.incorrect = current_incorrect + 1
@@ -295,8 +314,12 @@ def first(request):
           current_tris_incorrect = usern.first_tris_incor
           usern.first_tris_incor = current_tris_incorrect + 1
           usern.save()
+    else:
+      selection = random.choice(objects)
+    objects.remove(selection)
+    term = selection.noun.split()
+    
     incorrect1 = random.choice(objects)
-    # (incorrect1.id)
     objects.remove(incorrect1)
     incorrect1_l = incorrect1.noun.split()
     while incorrect1.case == selection.case and incorrect1.gender == selection.gender:
@@ -310,10 +333,13 @@ def first(request):
     
     while incorrect1.case == incorrect2.case and incorrect1.gender == incorrect2.gender and incorrect1.case == selection.case and incorrect2.case == selection.case and incorrect1.gender == selection.gender and incorrect2.gender == selection.gender:
       if incorrect2_l[-1] == incorrect1_l[-1] or incorrect2_l[-1] == term[-1] or term[-1] == incorrect1_l[-1]:
-        continue
+        # continue
+        pass
       incorrect2 = random.choice(objects)
       incorrect2_l = incorrect2.noun.split()
-    # previous.append(term[-1])
+      if incorrect1.case != incorrect2.case and incorrect1.case != selection.case and incorrect2.case != selection.case and incorrect1.gender != incorrect2.gender and incorrect1.gender != selection.gender and incorrect2.gender != selection.gender:
+        if incorrect2_l[-1] != incorrect1_l[-1] and incorrect2_l[-1] != term[-1] and incorrect1_l[-1] != term[-1]:
+          break
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
