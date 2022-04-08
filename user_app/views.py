@@ -788,6 +788,7 @@ def fifth(request):
     location = random.randint(1,3)
     return render(request, "user_app/adj_question.html", { 'term': term[0], 'outcome': outcome, 'correct': term[-1], 'incorrect1': incorrect1_l[-1], 'incorrect2': incorrect2_l[-1], 'location': location, 'stats': usern })
 
+
 def register(request):
   if request.method == "POST":
     form = UserCreationForm(request.POST)
@@ -897,4 +898,4 @@ def awards(request):
     title = "Advanced"
   elif total >= 5000:
     title = "Master"
-  return render(request, "user_app/awards.html", { 'title': title, 'total': total})
+  return render(request, "user_app/awards.html", { 'title': title, 'total': total, 'user': actual,})

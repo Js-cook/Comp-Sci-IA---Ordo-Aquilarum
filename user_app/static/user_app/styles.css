@@ -60,3 +60,8 @@ nav .navbar {
 th, .warning {
   color: red !important;
 }
+
+.card card-special {
+  border-style: solid !important;
+  border-color: yellow !important;
+}

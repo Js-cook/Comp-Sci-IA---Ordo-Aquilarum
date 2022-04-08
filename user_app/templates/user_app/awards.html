@@ -46,8 +46,8 @@
   <h5>Here you will find your awards based on how many questions you have answered and the titles you have earned.</h5>
 </div>
 <div class="d-flex justify-content-center">
-  <div class="card" style="width: 18rem;">
-    <div class="card-body">
+  <div class="card card-special" style="width: 18rem;">
+    <div class="card-body ">
       <h5 class="card-title">Title: {{title}}</h5>
       {% if title == "Novice" %}
       <p class="card-text">Everyone needs to start somewhere and you have already started your journey. You have answered a total of {{total}} questions.</p>
@@ -62,5 +62,60 @@
   </div>
 </div>
 <hr>
+<div class="container">
+  <h2>Streaks</h2>
+  <h5>Here you will find your awards for achieving correct answer streaks</h5>
+  <h5>Current Streak: {{user.streak}}</h5>
+  <div class="d-flex justify-content-center">
+  {% if user.highest_streak >= 5 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">5x Streak</h5>
+      <p class="card-text">Congratulations! You have correctly answered 5 questions in a row and have earned your first streak award! Keep growing your streak to get more awards. </p>
+    </div>
+  </div>    
+  {% endif %}
+  {% if user.highest_streak >= 10 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">10x Streak</h5>
+      <p class="card-text">Incredible! You have doubled your streak since the last award and have earned this new award for a 10x streak!</p>
+    </div>
+  </div>
+  {% endif %}
+  {% if user.highest_streak >= 20 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">20x Streak</h5>
+      <p class="card-text">Astonishing! Someone should get you some butter because you are on a roll! You have correctly answered 20 questions in a row and have earned this award.</p>
+    </div>
+  </div>
+  {% endif %}
+  {% if user.highest_streak >= 50 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">50x Streak</h5>
+      <p class="card-text">Stupendous! Look how far you have come since that first streak award you earned long ago! Keep up the good work.</p>
+    </div>
+  </div>
+  {% endif %}
+  {% if user.highest_streak >= 100 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">100x Streak</h5>
+      <p class="card-text">Mind-boggling! Your streak has exceeded 3 digits! Surely there is no other award higher than this though...</p>
+    </div>
+  </div>
+  {% endif %}
+  {% if user.highest_streak >= 1000 %}
+  <div class="card card-special">
+    <div class="card-body ">
+      <h5 class="card-title">1000x Streak</h5>
+      <p class="card-text">What. This award was created as joke/easter egg because I genuinely didn't believe anyone could get a streak this high but I guess not. So congrats I guess...</p>
+    </div>
+  </div>
+  {% endif %}
+  </div>
+</div>
 
 {% endblock %}
