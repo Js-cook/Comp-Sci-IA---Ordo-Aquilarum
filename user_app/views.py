@@ -898,4 +898,6 @@ def awards(request):
     title = "Advanced"
   elif total >= 5000:
     title = "Master"
-  return render(request, "user_app/awards.html", { 'title': title, 'total': total, 'user': actual,})
+
+  ordered = CustomUser.objects.order_by("-correct")
+  return render(request, "user_app/awards.html", { 'title': title, 'total': total, 'user': actual, 'list': ordered})

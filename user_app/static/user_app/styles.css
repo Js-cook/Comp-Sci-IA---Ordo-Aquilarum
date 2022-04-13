@@ -57,9 +57,9 @@ nav .navbar {
   margin-top: 3rem;
 }
 
-th, .warning {
+/* th, .warning {
   color: red !important;
-}
+} */
 
 .card card-special {
   border-style: solid !important;

@@ -117,5 +117,28 @@
   {% endif %}
   </div>
 </div>
+<hr>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Place</th>
+      <th scope="col">User</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Incorrect</th>
+      <th scope="col">Highest Streak</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for user in list %}
+  <tr>
+    <th scope="row">{{forloop.counter}}</th>
+    <th>{{user.user}}</th>
+    <th>{{user.correct}}</th>
+    <th>{{user.incorrect}}</th>
+    <th>{{user.highest_streak}}</th>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}

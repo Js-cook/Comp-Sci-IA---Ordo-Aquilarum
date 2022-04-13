@@ -59,10 +59,10 @@
     <th class="incorrect">{{user.incorrect}}</th>
     <th class="percentage">{{user.average}}%</th>
     {% else %}
-    <th class="text-danger">{{user.user}}</th>
-    <th class="correct text-danger">{{user.correct}}</th>
-    <th class="incorrect text-danger">{{user.incorrect}}</th>
-    <th class="percentage text-danger">{{user.average}}%</th>
+    <th class="text-danger table-danger">{{user.user}}</th>
+    <th class="correct text-danger table-danger">{{user.correct}}</th>
+    <th class="incorrect text-danger table-danger">{{user.incorrect}}</th>
+    <th class="percentage text-danger table-danger">{{user.average}}%</th>
     {% endif %}
   </tr>
   {% endfor %}
